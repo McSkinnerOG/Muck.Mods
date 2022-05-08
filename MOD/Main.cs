@@ -21,7 +21,6 @@ namespace MOD
             log = Logger; harmony = new Harmony(GUID);
             assembly = Assembly.GetExecutingAssembly();
             modFolder = Path.GetDirectoryName(assembly.Location);
-        } 
-        
+        }  
     }
 } 
