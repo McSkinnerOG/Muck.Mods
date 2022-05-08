@@ -1,4 +1,5 @@
 1 hit kill
+time of day modifier
 infinite hp & stamina & hunger
 water swimming flymod
 free chest
