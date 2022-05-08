@@ -1,0 +1,16 @@
+1 hit kill
+infinite hp & stamina & hunger
+free chest
+activate all interactables
+remove all trees (visually w/o destroying gameobject)
+1 hit rss's
+edit stack of rss you get
+teleport to crosshair
+telekinesis mod
+Flymod (but fix it!)
+ESP
+aimbot
+speedhack
+item speed hacks
+trader edits
+packet based modding.
