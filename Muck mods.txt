@@ -1,5 +1,6 @@
 1 hit kill
 infinite hp & stamina & hunger
+water swimming flymod
 free chest
 activate all interactables
 remove all trees (visually w/o destroying gameobject)
