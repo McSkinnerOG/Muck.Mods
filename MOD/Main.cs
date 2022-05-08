@@ -90,12 +90,11 @@ namespace MOD
             MODULES.ONE_HIT.FixedUpdate();
         }
         public void Update()
-        {
-            
-            if (Input.GetKey(Heal1.Value)) { ClientSend.PlayerHit((int)DAMAGE_VALUE.Value, GameManager.players[0].id, 9f, 0, base.transform.position); }
-            if (Input.GetKey(Heal2.Value)) { ClientSend.PlayerHit(99, GameManager.players[1].id, 9f, 0, base.transform.position); }
-            if (Input.GetKey(Hurt1.Value)) { ClientSend.RevivePlayer(GameManager.players[0].id); }
-            if (Input.GetKey(Hurt2.Value)) { ClientSend.RevivePlayer(GameManager.players[LocalClient.instance.myId].id); }
+        { 
+            if (Input.GetKey(KeyCode_KillOthers.Value)) { ClientSend.PlayerHit((int)DAMAGE_VALUE.Value, GameManager.players[0].id, 9f, 0, base.transform.position); }
+            if (Input.GetKey(KeyCode_KillMe.Value)) { ClientSend.PlayerHit(99, GameManager.players[1].id, 9f, 0, base.transform.position); }
+            if (Input.GetKey(KeyCode_ReviveOthers.Value)) { ClientSend.RevivePlayer(GameManager.players[0].id); } 
+            if (Input.GetKey(KeyCode_ReviveMe.Value)) { ClientSend.RevivePlayer(GameManager.players[LocalClient.instance.myId].id); }
             if (Input.GetKey(KeyCode.C))
             {
                 if (lp_movement == null) { LocalPlayer_Search(); }
@@ -105,20 +104,46 @@ namespace MOD
             {
                 if (lp_movement == null) { LocalPlayer_Search(); }
                 lp_input.crouching = false; 
-            } 
+            }
+            if (Input.GetKeyDown(KeyCode_Cheats.Value))
+            {
+                LocalPlayer_Search();
+                lp_pstatus.hp = 999;
+                lp_pstatus.maxHp = 999;
+                lp_pstatus.stamina = 99999;
+                lp_pstatus.maxStamina = 99999;
+                lp_pstatus.shield = 9999;
+                lp_pstatus.maxShield = 9999;
+                lp_pstatus.hunger = 9999;
+                lp_pstatus.currentSpeedArmorMultiplier = RUN_SPEED.Value;
+            }
+            if (Input.GetKeyDown(KeyCode_GRIEFER.Value))
+            {
+                var m = FindObjectsOfType<HitableMob>();
+                foreach (HitableMob mob in m) { mob.hp = 0; }
+            }
         }
-        public static ConfigEntry<KeyCode> Heal1;
-        public static ConfigEntry<KeyCode> Heal2;
-        public static ConfigEntry<KeyCode> Hurt1;
-        public static ConfigEntry<KeyCode> Hurt2; 
+        #region[Bepinex Config Entries] 
         public static ConfigEntry<float> DAMAGE_VALUE; 
+        public static ConfigEntry<KeyCode> KeyCode_Cheats;
+        public static ConfigEntry<KeyCode> KeyCode_KillOthers;
+        public static ConfigEntry<KeyCode> KeyCode_KillMe;
+        public static ConfigEntry<KeyCode> KeyCode_ReviveOthers;
+        public static ConfigEntry<KeyCode> KeyCode_ReviveMe;
+        public static ConfigEntry<KeyCode> KeyCode_GRIEFER;
+        public static ConfigEntry<float> RUN_SPEED;
         public void InitConfig()
-        {
-            Heal1 = Config.Bind("Player", "Heal1", KeyCode.F1, "Apply Settings");
-            Heal2 = Config.Bind("Player", "Heal2", KeyCode.F2, "FREECAM");
-            Hurt1 = Config.Bind("Player", "Hurt1", KeyCode.F3, "FLIGHT");
-            Hurt2 = Config.Bind("Player", "Hurt2", KeyCode.F4, "FLIGHT");  
+        { 
             DAMAGE_VALUE = Config.Bind("Player", "DAMAGE", 999f, new ConfigDescription("Flight Speed", new AcceptableValueRange<float>(1f, 9999999f)));
+
+            KeyCode_Cheats = Config.Bind("Cheats", "Infinite Hp, Shield, Stam, No Hunger", KeyCode.F1, "LMFAO!");
+            KeyCode_KillOthers = Config.Bind("Cheats", "Get sauced", KeyCode.F2, "Kill player");
+            KeyCode_KillMe = Config.Bind("Cheats", "KMS", KeyCode.F2, "Kill player");
+            KeyCode_ReviveMe = Config.Bind("Cheatz", "ReviveMe", KeyCode.F3, "Insta res");
+            KeyCode_ReviveOthers = Config.Bind("Cheatz", "ReviveOthers", KeyCode.F3, "Insta res");
+            KeyCode_GRIEFER = Config.Bind("Cheats", "Hehe", KeyCode.F4, "Set Mobs hp to infinity");
+            RUN_SPEED = Config.Bind("Run speed", "Run Speed Slider", 1f, new ConfigDescription("Running Speed", new AcceptableValueRange<float>(0f, 1500f)));
         }
+        #endregion
     }
 }
