@@ -85,25 +85,20 @@ namespace MOD
             }
             if (lp_pmanager == null) { lp_pmanager = lp_movement.gameObject.GetComponent<PlayerManager>(); }
         }
-        public void FixedUpdate()
-        {
-            MODULES.ONE_HIT.FixedUpdate();
-        }
+        public void FixedUpdate() { MODULES.ONE_HIT.FixedUpdate(); }
         public void Update()
         { 
-            if (Input.GetKey(KeyCode_KillOthers.Value)) { ClientSend.PlayerHit((int)DAMAGE_VALUE.Value, GameManager.players[0].id, 9f, 0, base.transform.position); }
-            if (Input.GetKey(KeyCode_KillMe.Value)) { ClientSend.PlayerHit(99, GameManager.players[1].id, 9f, 0, base.transform.position); }
-            if (Input.GetKey(KeyCode_ReviveOthers.Value)) { ClientSend.RevivePlayer(GameManager.players[0].id); } 
+            if (Input.GetKey(KeyCode_KillOthers.Value)) { ClientSend.PlayerHit((int)DAMAGE_VALUE.Value, GameManager.players[1].id, 9f, 0, base.transform.position); }
+            if (Input.GetKey(KeyCode_KillMe.Value)) { ClientSend.PlayerHit(99, GameManager.players[LocalClient.instance.myId].id, 9f, 0, base.transform.position); }
+            if (Input.GetKey(KeyCode_ReviveOthers.Value)) { ClientSend.RevivePlayer(GameManager.players[1].id); } 
             if (Input.GetKey(KeyCode_ReviveMe.Value)) { ClientSend.RevivePlayer(GameManager.players[LocalClient.instance.myId].id); }
             if (Input.GetKey(KeyCode.C))
             {
-                if (lp_movement == null) { LocalPlayer_Search(); }
-                lp_input.crouching = true;
+                if (lp_movement == null) { LocalPlayer_Search(); } lp_input.crouching = true;
             }
             if (Input.GetKeyUp(KeyCode.C))
             {
-                if (lp_movement == null) { LocalPlayer_Search(); }
-                lp_input.crouching = false; 
+                if (lp_movement == null) { LocalPlayer_Search(); } lp_input.crouching = false; 
             }
             if (Input.GetKeyDown(KeyCode_Cheats.Value))
             {
@@ -126,6 +121,7 @@ namespace MOD
         #region[Bepinex Config Entries] 
         public static ConfigEntry<float> DAMAGE_VALUE; 
         public static ConfigEntry<KeyCode> KeyCode_Cheats;
+        public static ConfigEntry<KeyCode> KeyCode_Sliding;
         public static ConfigEntry<KeyCode> KeyCode_KillOthers;
         public static ConfigEntry<KeyCode> KeyCode_KillMe;
         public static ConfigEntry<KeyCode> KeyCode_ReviveOthers;
@@ -134,9 +130,9 @@ namespace MOD
         public static ConfigEntry<float> RUN_SPEED;
         public void InitConfig()
         { 
-            DAMAGE_VALUE = Config.Bind("Player", "DAMAGE", 999f, new ConfigDescription("Flight Speed", new AcceptableValueRange<float>(1f, 9999999f)));
-
+            DAMAGE_VALUE = Config.Bind("Player", "DAMAGE", 999f, new ConfigDescription("Flight Speed", new AcceptableValueRange<float>(1f, 9999999f))); 
             KeyCode_Cheats = Config.Bind("Cheats", "Infinite Hp, Shield, Stam, No Hunger", KeyCode.F1, "LMFAO!");
+            KeyCode_Cheats = Config.Bind("Cheats", "Sliding", KeyCode.C, "Sliding!");
             KeyCode_KillOthers = Config.Bind("Cheats", "Get sauced", KeyCode.F2, "Kill player");
             KeyCode_KillMe = Config.Bind("Cheats", "KMS", KeyCode.F2, "Kill player");
             KeyCode_ReviveMe = Config.Bind("Cheatz", "ReviveMe", KeyCode.F3, "Insta res");
