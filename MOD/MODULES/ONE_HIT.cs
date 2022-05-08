@@ -14,7 +14,7 @@ namespace MOD.MODULES
         {
             time++;
             Debug.Log(time);
-            if (time >= 100)
+            if (time >= 145)
             { 
                 OneHit();
                 time = 0;
@@ -44,10 +44,11 @@ namespace MOD.MODULES
             {
                 item.hp = 1;
             }
-            foreach (HitableActor item in a)
-            {
-                item.hp = 1; 
-            }
+            // TODO: FILTER FOR TRADERS
+            //foreach (HitableActor item in a)
+            //{
+            //    item.hp = 1; 
+            //}
             Debug.Log("FINISHED ONE HIT FUNCTION CORRECTLY");
         } 
     }
