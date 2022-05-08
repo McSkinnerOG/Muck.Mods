@@ -1,0 +1,4 @@
+C:\Users\Justin\Documents\GitHub\Muck.Mods\MOD\Package\plugins\MOD\MOD.dll
+C:\Users\Justin\Documents\GitHub\Muck.Mods\MOD\obj\Release\MOD.csproj.AssemblyReference.cache
+C:\Users\Justin\Documents\GitHub\Muck.Mods\MOD\obj\Release\MOD.csproj.CoreCompileInputs.cache
+C:\Users\Justin\Documents\GitHub\Muck.Mods\MOD\obj\Release\MOD.dll
