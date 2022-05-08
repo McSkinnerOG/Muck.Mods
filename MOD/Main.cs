@@ -5,7 +5,6 @@ using HarmonyLib;
 using System.IO;
 using System.Reflection;
 using UnityEngine;
-using System.Collections;
 
 namespace MOD
 {
@@ -19,7 +18,7 @@ namespace MOD
         internal readonly Assembly assembly;
         public readonly string modFolder;
         #endregion
-        public void Start() { harmony.PatchAll(assembly); }
+        public void Start() { harmony.PatchAll(assembly); InitConfig(); }
         public Main()
         {
             log = Logger; harmony = new Harmony(GUID);
@@ -27,7 +26,7 @@ namespace MOD
             modFolder = Path.GetDirectoryName(assembly.Location);
         }
 
-
+        #region[LOCALPLAYER]
         public static PlayerMovement lp_movement;
         public static PlayerInput lp_input;
         public static PlayerManager lp_pmanager;
@@ -35,6 +34,8 @@ namespace MOD
         public static HitableActor lp_hittable;
         public static DetectInteractables lp_interact; 
         public static PingController lp_pingController;
+        #endregion
+        #region[ONLINEPLAYER]
         public static PlayerMovement op_movement;
         public static PlayerInput op_input;
         public static PlayerManager op_pmanager;
@@ -42,10 +43,7 @@ namespace MOD
         public static HitableActor op_hittable;
         public static DetectInteractables op_interact;
         public static PingController op_pingController;
-        public static ImpactDamage Dmg;
-
-
-
+        #endregion 
         //All
         public static PlayerStatus[] All_Player_Status;
         public static OnlinePlayer[] Player_List;
@@ -79,27 +77,35 @@ namespace MOD
             if (lp_movement == null)
             {
                 lp_movement = FindObjectOfType<PlayerMovement>();
-                lp_input = FindObjectOfType<PlayerInput>();
+                lp_input = FindObjectOfType<PlayerInput>(); 
                 lp_pstatus = FindObjectOfType<PlayerStatus>();
                 lp_hittable = FindObjectOfType<HitableActor>();
                 lp_interact = FindObjectOfType<DetectInteractables>();
                 lp_pingController = FindObjectOfType<PingController>();
-                Dmg = FindObjectOfType<ImpactDamage>();
             }
             if (lp_pmanager == null) { lp_pmanager = lp_movement.gameObject.GetComponent<PlayerManager>(); }
         }
-
-        public void Awake() { InitConfig(); }
-
         public void FixedUpdate()
         {
-            Modules.One_Hitter.FixedUpdate();
+            MODULES.ONE_HIT.FixedUpdate();
         }
-
         public void Update()
-        {
-            //Cheats
-            if (Input.GetKeyDown(KeycodeCheats.Value))
+        { 
+            if (Input.GetKey(KeyCode_KillOthers.Value)) { ClientSend.PlayerHit((int)DAMAGE_VALUE.Value, GameManager.players[0].id, 9f, 0, base.transform.position); }
+            if (Input.GetKey(KeyCode_KillMe.Value)) { ClientSend.PlayerHit(99, GameManager.players[1].id, 9f, 0, base.transform.position); }
+            if (Input.GetKey(KeyCode_ReviveOthers.Value)) { ClientSend.RevivePlayer(GameManager.players[0].id); } 
+            if (Input.GetKey(KeyCode_ReviveMe.Value)) { ClientSend.RevivePlayer(GameManager.players[LocalClient.instance.myId].id); }
+            if (Input.GetKey(KeyCode.C))
+            {
+                if (lp_movement == null) { LocalPlayer_Search(); }
+                lp_input.crouching = true;
+            }
+            if (Input.GetKeyUp(KeyCode.C))
+            {
+                if (lp_movement == null) { LocalPlayer_Search(); }
+                lp_input.crouching = false; 
+            }
+            if (Input.GetKeyDown(KeyCode_Cheats.Value))
             {
                 LocalPlayer_Search();
                 lp_pstatus.hp = 999;
@@ -109,36 +115,35 @@ namespace MOD
                 lp_pstatus.shield = 9999;
                 lp_pstatus.maxShield = 9999;
                 lp_pstatus.hunger = 9999;
-                lp_pstatus.currentSpeedArmorMultiplier = RunSpd.Value;
+                lp_pstatus.currentSpeedArmorMultiplier = RUN_SPEED.Value;
             }
-            //Kill your teammate, revive yourself :)
-            if (Input.GetKey(Keycodekillu.Value)) { ClientSend.PlayerHit(9999,GameManager.players[1].id, 9999, 9999, base.transform.position); }
-            if (Input.GetKey(KeycodeRev.Value)) {  ClientSend.RevivePlayer(GameManager.players[0].id); }
-            if (Input.GetKeyDown(KeyCodeGetFucked.Value))
+            if (Input.GetKeyDown(KeyCode_GRIEFER.Value))
             {
                 var m = FindObjectsOfType<HitableMob>();
-                foreach (HitableMob mob in m)
-                {
-                    mob.hp = 0;
-                }
+                foreach (HitableMob mob in m) { mob.hp = 0; }
             }
         }
-
-        #region[Bepinex Config Entries]
-        public static ConfigEntry<KeyCode> KeycodeCheats;
-        public static ConfigEntry<KeyCode> Keycodekillu;
-        public static ConfigEntry<KeyCode> KeycodeRev;
-        public static ConfigEntry<KeyCode> KeyCodeGetFucked;
-        public static ConfigEntry<float> RunSpd;
-        #endregion 
-
+        #region[Bepinex Config Entries] 
+        public static ConfigEntry<float> DAMAGE_VALUE; 
+        public static ConfigEntry<KeyCode> KeyCode_Cheats;
+        public static ConfigEntry<KeyCode> KeyCode_KillOthers;
+        public static ConfigEntry<KeyCode> KeyCode_KillMe;
+        public static ConfigEntry<KeyCode> KeyCode_ReviveOthers;
+        public static ConfigEntry<KeyCode> KeyCode_ReviveMe;
+        public static ConfigEntry<KeyCode> KeyCode_GRIEFER;
+        public static ConfigEntry<float> RUN_SPEED;
         public void InitConfig()
-        {
-            KeycodeCheats = Config.Bind("Cheats", "Infinite Hp, Shield, Stam, No Hunger", KeyCode.F1, "LMFAO!");
-            Keycodekillu = Config.Bind("Cheats", "Get sauced", KeyCode.F2, "Kill player");
-            KeycodeRev = Config.Bind("Cheatz", "Revive", KeyCode.F3, "Insta res");
-            KeyCodeGetFucked = Config.Bind("Cheats", "Hehe", KeyCode.F4, "Set Mobs hp to infinit");
-            RunSpd = Config.Bind("Run speed", "Run Speed Slider", 1f, new ConfigDescription("Running Speed", new AcceptableValueRange<float>(0f, 1500f)));
+        { 
+            DAMAGE_VALUE = Config.Bind("Player", "DAMAGE", 999f, new ConfigDescription("Flight Speed", new AcceptableValueRange<float>(1f, 9999999f)));
+
+            KeyCode_Cheats = Config.Bind("Cheats", "Infinite Hp, Shield, Stam, No Hunger", KeyCode.F1, "LMFAO!");
+            KeyCode_KillOthers = Config.Bind("Cheats", "Get sauced", KeyCode.F2, "Kill player");
+            KeyCode_KillMe = Config.Bind("Cheats", "KMS", KeyCode.F2, "Kill player");
+            KeyCode_ReviveMe = Config.Bind("Cheatz", "ReviveMe", KeyCode.F3, "Insta res");
+            KeyCode_ReviveOthers = Config.Bind("Cheatz", "ReviveOthers", KeyCode.F3, "Insta res");
+            KeyCode_GRIEFER = Config.Bind("Cheats", "Hehe", KeyCode.F4, "Set Mobs hp to infinity");
+            RUN_SPEED = Config.Bind("Run speed", "Run Speed Slider", 1f, new ConfigDescription("Running Speed", new AcceptableValueRange<float>(0f, 1500f)));
         }
+        #endregion
     }
-} 
+}

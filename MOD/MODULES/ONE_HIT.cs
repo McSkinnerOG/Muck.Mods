@@ -1,23 +1,26 @@
-﻿using UnityEngine;
-
-
-namespace MOD.Modules
+﻿using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using UnityEngine;
+namespace MOD.MODULES
 {
-    public class One_Hitter : MonoBehaviour
+    public class ONE_HIT : MonoBehaviour
     {
         public static int time = 0;
-
         public static void FixedUpdate()
         {
             time++;
             Debug.Log(time);
             if (time >= 145)
-            {
+            { 
                 OneHit();
                 time = 0;
                 return;
-            }
-        }
+            } 
+        } 
         public static void OneHit()
         {
             var x = FindObjectsOfType<LootContainerInteract>();
@@ -41,11 +44,12 @@ namespace MOD.Modules
             {
                 item.hp = 1;
             }
-            foreach (HitableActor item in a)
-            {
-                item.hp = 1;
-            }
-            Debug.Log("Successfully applied onehitter!");
-        }
+            // TODO: FILTER FOR TRADERS
+            //foreach (HitableActor item in a)
+            //{
+            //    item.hp = 1; 
+            //}
+            Debug.Log("FINISHED ONE HIT FUNCTION CORRECTLY");
+        } 
     }
 }
