@@ -32,9 +32,14 @@ namespace MOD
             modFolder = Path.GetDirectoryName(assembly.Location);
         }
 
-        public void Start()
+
+
+
+        public void Start() { harmony.PatchAll(assembly); }
+
+        public void Update()
         {
-            harmony.PatchAll(assembly);
+
         }
 
 
