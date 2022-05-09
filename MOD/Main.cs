@@ -13,7 +13,7 @@ namespace MOD
     public class Main : BaseUnityPlugin
     {
         #region[Declarations] 
-        public const string MODNAME = "MOD", AUTHOR = "", GUID = AUTHOR + "_" + MODNAME, VERSION = "1.0.0.1"; 
+        public const string MODNAME = "MOD", AUTHOR = "", GUID = AUTHOR + "_" + MODNAME, VERSION = "1.0.0.2"; 
         internal readonly ManualLogSource log;
         internal readonly Harmony harmony;
         internal readonly Assembly assembly;
@@ -47,8 +47,7 @@ namespace MOD
         #endregion 
         //All
         public static PlayerStatus[] All_Player_Status;
-        public static OnlinePlayer[] Player_List;
-        
+        public static OnlinePlayer[] Player_List; 
         public void GetPlayerByID(int id)
         {
             Player_List = FindObjectsOfType<OnlinePlayer>();
@@ -100,7 +99,15 @@ namespace MOD
             }
             if (lp_pmanager == null) { lp_pmanager = lp_movement.gameObject.GetComponent<PlayerManager>(); }
         }
-        public void FixedUpdate() { MODULES.WORLD.ONE_HIT.FixedUpdate(); MODULES.WORLD.FREE_CHEST.FixedUpdate(); }
+        public void FixedUpdate() 
+        {
+            // Only run our stuff while INGAME
+            if (SceneManager.GetActiveScene().name == "GameAfterLobby")
+            {
+                MODULES.WORLD.ONE_HIT.FixedUpdate();
+                MODULES.WORLD.FREE_CHEST.FixedUpdate();
+            }
+        }
         public void Update()
         {
             // Only run our stuff while INGAME
@@ -108,56 +115,67 @@ namespace MOD
             {
                 // Call other classes Updates
                 MODULES.STATS.GOD.Update();
+                MODULES.STATS.HUNGER.Update();
+                MODULES.STATS.SHIELD.Update();
+                MODULES.STATS.STAMINA.Update();
+                MODULES.MOVEMENT.SLIDING.Update();
+                MODULES.MOVEMENT.SPEEDHACK.Update();
+                MODULES.MOVEMENT.TELEPORT.Update();
                 //if (Input.GetKey(KeyCode_KillOthers.Value)) { ClientSend.PlayerHit((int)DAMAGE_VALUE.Value, GameManager.players[1].id, (int)DAMAGE_VALUE.Value, 0, base.transform.position); }
                 //if (Input.GetKey(KeyCode_KillMe.Value)) { ClientSend.PlayerHit((int)DAMAGE_VALUE.Value, GameManager.players[LocalClient.instance.myId].id, (int)DAMAGE_VALUE.Value, 0, base.transform.position); }
                 //if (Input.GetKey(KeyCode_ReviveOthers.Value)) { ClientSend.RevivePlayer(GameManager.players[1].id); }
-                //if (Input.GetKey(KeyCode_ReviveMe.Value)) { ClientSend.RevivePlayer(GameManager.players[LocalClient.instance.myId].id); }
-                if (Input.GetKey(KeyCode_Sliding.Value))
-                {
-                    if (lp_movement == null) { LocalPlayer_Search(); }
-                    lp_input.crouching = true;
-                }
-                if (Input.GetKeyUp(KeyCode_Sliding.Value)) { if (lp_movement == null) { LocalPlayer_Search(); } lp_input.crouching = false; }
+                //if (Input.GetKey(KeyCode_ReviveMe.Value)) { ClientSend.RevivePlayer(GameManager.players[LocalClient.instance.myId].id); } 
                 if (Input.GetKeyDown(KeyCode_Cheats.Value))
                 {
-                    LocalPlayer_Search();
-                    MODULES.STATS.GOD.god = !MODULES.STATS.GOD.god;
-                    lp_pstatus.stamina = 99999;
-                    lp_pstatus.maxStamina = 99999;
+                    LocalPlayer_Search(); 
                     lp_pstatus.shield = 9999;
                     lp_pstatus.maxShield = 9999;
                     lp_pstatus.hunger = 9999;
                 }
                 if (Input.GetKeyDown(KeyCode_GRIEFER.Value))
                 {
-                    var m = FindObjectsOfType<HitableMob>();
+                    var m = FindObjectsOfType<HitableMob>(); 
                     foreach (HitableMob mob in m) { mob.hp = 0; }
                 }
             } 
         }
         #region[Bepinex Config Entries] 
         public static ConfigEntry<float> DAMAGE_VALUE; 
-        public static ConfigEntry<KeyCode> KeyCode_Cheats;
-        public static ConfigEntry<KeyCode> KeyCode_Sliding;
-        public static ConfigEntry<KeyCode> KeyCode_KillOthers;
-        public static ConfigEntry<KeyCode> KeyCode_KillMe;
-        public static ConfigEntry<KeyCode> KeyCode_ReviveOthers;
-        public static ConfigEntry<KeyCode> KeyCode_ReviveMe;
+        public static ConfigEntry<KeyCode> KeyCode_Cheats; 
+        //public static ConfigEntry<KeyCode> KeyCode_KillOthers;
+        //public static ConfigEntry<KeyCode> KeyCode_KillMe;
+        //public static ConfigEntry<KeyCode> KeyCode_ReviveOthers;
+        //public static ConfigEntry<KeyCode> KeyCode_ReviveMe;
         public static ConfigEntry<KeyCode> KeyCode_GRIEFER;
         
         public static ConfigEntry<string> playername;
         public void InitConfig()
-        { 
-            DAMAGE_VALUE = Config.Bind("Cheats", "DAMAGE", 999f, new ConfigDescription("Flight Speed", new AcceptableValueRange<float>(1f, 9999999f))); 
-            KeyCode_Cheats = Config.Bind("Cheats", "Infinite Hp, Shield, Stam, No Hunger", KeyCode.F1, "LMFAO!"); 
+        {
+            KeyCode_Cheats = Config.Bind("Cheats", "Infinite Hp, Shield, Stam, No Hunger", KeyCode.F1, "LMFAO!");
+            KeyCode_GRIEFER = Config.Bind("Cheats", "Hehe", KeyCode.F6, "Set Mobs hp to infinity");
+            DAMAGE_VALUE = Config.Bind("Cheats", "DAMAGE", 999f, new ConfigDescription("Flight Speed", new AcceptableValueRange<float>(1f, 9999999f)));
             //KeyCode_KillOthers = Config.Bind("Cheats", "KillOthers", KeyCode.F2, "Kill OnlinePlayer");
             //KeyCode_KillMe = Config.Bind("Cheats", "KillMe", KeyCode.F3, "Kill LocalPlayer");
             //KeyCode_ReviveMe = Config.Bind("Cheats", "ReviveMe", KeyCode.F4, "Insta res");
             //KeyCode_ReviveOthers = Config.Bind("Cheats", "ReviveOthers", KeyCode.F5, "Insta res");
-            KeyCode_GRIEFER = Config.Bind("Cheats", "Hehe", KeyCode.F6, "Set Mobs hp to infinity");
-            KeyCode_Sliding = Config.Bind("Cheats", "Sliding", KeyCode.C, "Sliding!"); 
+
+            //STAMINA
+            MODULES.STATS.STAMINA.Stamina = Config.Bind("Cheats", "Stamina", 999f, new ConfigDescription("Current/Active Stamina Value", new AcceptableValueRange<float>(1f, 9999999f))); 
+            MODULES.STATS.STAMINA.StaminaMax = Config.Bind("Cheats", "Stamina Max", 999f, new ConfigDescription("Maximum Stamina Value", new AcceptableValueRange<float>(1f, 9999999f))); 
+            MODULES.STATS.STAMINA.StaminaDrain = Config.Bind("Cheats", "Stamina Drain", 999f, new ConfigDescription("Stamina Drain Amount Over Time", new AcceptableValueRange<float>(0f, 1000)));
+            MODULES.STATS.STAMINA.KeyCode_InfStamina = Config.Bind("Cheats", "Infinite Stamina", KeyCode.Backspace, "Infinite Stamina!");
+            MODULES.STATS.STAMINA.KeyCode_SetStamina = Config.Bind("Cheats", "Set Stamina", KeyCode.Backspace, "Set Stamina!"); 
+            //HUNGER
+            MODULES.STATS.HUNGER.Hunger = Config.Bind("Cheats", "Hunger", 999f, new ConfigDescription("Current/Active Hunger Value", new AcceptableValueRange<float>(1f, 9999999f)));
+            MODULES.STATS.HUNGER.HungerMax = Config.Bind("Cheats", "Hunger Max", 999f, new ConfigDescription("Maximum Hunger Value", new AcceptableValueRange<float>(1f, 9999999f)));
+            MODULES.STATS.HUNGER.HungerDrain = Config.Bind("Cheats", "Hunger Drain", 999f, new ConfigDescription("Hunger Drain Amount Over Time", new AcceptableValueRange<float>(0f, 1000)));
+            MODULES.STATS.HUNGER.KeyCode_InfHunger = Config.Bind("Cheats", "Infinite Hunger", KeyCode.Backspace, "Infinite Hunger!");
+            MODULES.STATS.HUNGER.KeyCode_SetHunger = Config.Bind("Cheats", "Set Hunger", KeyCode.Backspace, "Set Hunger!"); 
+            //GOD
             MODULES.STATS.GOD.HP = Config.Bind("Cheats", "HP", 100f, new ConfigDescription("Player HP", new AcceptableValueRange<float>(1f, 100000f)));
             MODULES.STATS.GOD.KeyCode_Godmode = Config.Bind("Cheats", "GODMODE", KeyCode.G, "GODMODE");
+            //MOVEMENT
+            MODULES.MOVEMENT.SLIDING.KeyCode_Sliding = Config.Bind("Cheats", "Sliding", KeyCode.C, "Sliding!");
             MODULES.MOVEMENT.SPEEDHACK.RUN_SPEED = Config.Bind("Cheats", "Run Speed Slider", 1f, new ConfigDescription("Running Speed", new AcceptableValueRange<float>(0f, 1500f)));  
             MODULES.WORLD.ONE_HIT.KeyCode_ONE_HIT = Config.Bind("Cheats", "ONEHIT", KeyCode.O, "ONEHIT!");
             MODULES.WORLD.FREE_CHEST.KeyCode_FREE_CHEST = Config.Bind("Cheats", "FREECHEST", KeyCode.P, "FREECHEST!"); 

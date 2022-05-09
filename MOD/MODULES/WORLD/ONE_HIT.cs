@@ -25,14 +25,15 @@ namespace MOD.MODULES.WORLD
                 //then we set the 'time' var back to 0 and end it all cleanly with return
                 if (time >= 145) { OneHit(); time = 0; return; }
             }
-        } 
+        }
+
         public static void OneHit()
         { 
             var trees = FindObjectsOfType<HitableTree>();
             var mobs = FindObjectsOfType<HitableMob>();
             var rocks = FindObjectsOfType<HitableRock>(); 
             // Set the Tree/Rock/Mob to 1 health |
-            //for trees and rocks we also set the "compatibleItem" to a generic "Item" insted of "Pickaxe" or "Axe" etc
+            //for trees and rocks we also set the "compatibleItem" to a generic "Item" instead of "Pickaxe" or "Axe" etc
             foreach (HitableTree tree in trees) { tree.hp = 1; tree.compatibleItem = InventoryItem.ItemType.Item; tree.minTier = 0; }
             foreach (HitableMob mob in mobs) { mob.hp = 1; }
             foreach (HitableRock rock in rocks) { rock.hp = 1; rock.compatibleItem = InventoryItem.ItemType.Item; rock.minTier = 0; }
