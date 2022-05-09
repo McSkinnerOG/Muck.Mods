@@ -1,11 +1,11 @@
-﻿using BepInEx;
+﻿//We dont use our region import trick here as it causes errors.
+using BepInEx;
 using BepInEx.Configuration;
 using BepInEx.Logging;
 using HarmonyLib;
 using System.IO;
 using System.Reflection;
 using UnityEngine;
-
 namespace MOD
 {
     [BepInPlugin(GUID, MODNAME, VERSION)]
@@ -47,24 +47,38 @@ namespace MOD
         //All
         public static PlayerStatus[] All_Player_Status;
         public static OnlinePlayer[] Player_List;
-
+        
         public void GetPlayerByID(int id)
         {
             Player_List = FindObjectsOfType<OnlinePlayer>();
             foreach (OnlinePlayer op in Player_List)
-            { 
+            {
                 op_pmanager = op.GetComponent<PlayerManager>();
                 if (op_pmanager.id == id)
                 {
-                    //do stuff
                     op_hittable = op.GetComponent<HitableActor>();
                     op_pmanager = op.GetComponent<PlayerManager>();
                     return;
                 }
             }
-        } 
+        }
+        public void GetPlayerByName(string username)
+        {
+            Player_List = FindObjectsOfType<OnlinePlayer>();
+            foreach (OnlinePlayer op in Player_List)
+            {
+                op_pmanager = op.GetComponent<PlayerManager>();
+                if (op_pmanager.username == Main.op_name)
+                {
+                    op_hittable = op.GetComponent<HitableActor>();
+                    op_pmanager = op.GetComponent<PlayerManager>();
+                    return;
+                }
+            }
+        }
         public void OnlinePlayer_Search()
         {
+            GetPlayerByID(0);
             Player_List = FindObjectsOfType<OnlinePlayer>();
             foreach (OnlinePlayer op in Player_List)
             {
@@ -85,21 +99,18 @@ namespace MOD
             }
             if (lp_pmanager == null) { lp_pmanager = lp_movement.gameObject.GetComponent<PlayerManager>(); }
         }
-        public void FixedUpdate() { MODULES.ONE_HIT.FixedUpdate(); }
+        public void FixedUpdate() { MODULES.ONE_HIT.FixedUpdate(); MODULES.FREE_CHEST.FixedUpdate(); }
         public void Update()
         { 
             if (Input.GetKey(KeyCode_KillOthers.Value)) { ClientSend.PlayerHit((int)DAMAGE_VALUE.Value, GameManager.players[1].id, 9f, 0, base.transform.position); }
             if (Input.GetKey(KeyCode_KillMe.Value)) { ClientSend.PlayerHit(99, GameManager.players[LocalClient.instance.myId].id, 9f, 0, base.transform.position); }
             if (Input.GetKey(KeyCode_ReviveOthers.Value)) { ClientSend.RevivePlayer(GameManager.players[1].id); } 
             if (Input.GetKey(KeyCode_ReviveMe.Value)) { ClientSend.RevivePlayer(GameManager.players[LocalClient.instance.myId].id); }
-            if (Input.GetKey(KeyCode.C))
+            if (Input.GetKey(KeyCode_Sliding.Value))
             {
                 if (lp_movement == null) { LocalPlayer_Search(); } lp_input.crouching = true;
             }
-            if (Input.GetKeyUp(KeyCode.C))
-            {
-                if (lp_movement == null) { LocalPlayer_Search(); } lp_input.crouching = false; 
-            }
+            if (Input.GetKeyUp(KeyCode_Sliding.Value)) { if (lp_movement == null) { LocalPlayer_Search(); } lp_input.crouching = false; }
             if (Input.GetKeyDown(KeyCode_Cheats.Value))
             {
                 LocalPlayer_Search();
@@ -128,17 +139,20 @@ namespace MOD
         public static ConfigEntry<KeyCode> KeyCode_ReviveMe;
         public static ConfigEntry<KeyCode> KeyCode_GRIEFER;
         public static ConfigEntry<float> RUN_SPEED;
+        public static ConfigEntry<string> playername;
         public void InitConfig()
         { 
-            DAMAGE_VALUE = Config.Bind("Player", "DAMAGE", 999f, new ConfigDescription("Flight Speed", new AcceptableValueRange<float>(1f, 9999999f))); 
-            KeyCode_Cheats = Config.Bind("Cheats", "Infinite Hp, Shield, Stam, No Hunger", KeyCode.F1, "LMFAO!");
-            KeyCode_Cheats = Config.Bind("Cheats", "Sliding", KeyCode.C, "Sliding!");
-            KeyCode_KillOthers = Config.Bind("Cheats", "Get sauced", KeyCode.F2, "Kill player");
-            KeyCode_KillMe = Config.Bind("Cheats", "KMS", KeyCode.F2, "Kill player");
-            KeyCode_ReviveMe = Config.Bind("Cheatz", "ReviveMe", KeyCode.F3, "Insta res");
-            KeyCode_ReviveOthers = Config.Bind("Cheatz", "ReviveOthers", KeyCode.F3, "Insta res");
-            KeyCode_GRIEFER = Config.Bind("Cheats", "Hehe", KeyCode.F4, "Set Mobs hp to infinity");
-            RUN_SPEED = Config.Bind("Run speed", "Run Speed Slider", 1f, new ConfigDescription("Running Speed", new AcceptableValueRange<float>(0f, 1500f)));
+            DAMAGE_VALUE = Config.Bind("Cheats", "DAMAGE", 999f, new ConfigDescription("Flight Speed", new AcceptableValueRange<float>(1f, 9999999f))); 
+            KeyCode_Cheats = Config.Bind("Cheats", "Infinite Hp, Shield, Stam, No Hunger", KeyCode.F1, "LMFAO!"); 
+            KeyCode_KillOthers = Config.Bind("Cheats", "KillOthers", KeyCode.F2, "Kill OnlinePlayer");
+            KeyCode_KillMe = Config.Bind("Cheats", "KillMe", KeyCode.F3, "Kill LocalPlayer");
+            KeyCode_ReviveMe = Config.Bind("Cheats", "ReviveMe", KeyCode.F4, "Insta res");
+            KeyCode_ReviveOthers = Config.Bind("Cheats", "ReviveOthers", KeyCode.F5, "Insta res");
+            KeyCode_GRIEFER = Config.Bind("Cheats", "Hehe", KeyCode.F6, "Set Mobs hp to infinity");
+            RUN_SPEED = Config.Bind("Cheats", "Run Speed Slider", 1f, new ConfigDescription("Running Speed", new AcceptableValueRange<float>(0f, 1500f))); 
+            KeyCode_Sliding = Config.Bind("Cheats", "Sliding", KeyCode.C, "Sliding!");
+            MODULES.ONE_HIT.KeyCode_ONE_HIT = Config.Bind("Cheats", "ONEHIT", KeyCode.O, "ONEHIT!");
+            MODULES.FREE_CHEST.KeyCode_FREE_CHEST = Config.Bind("Cheats", "FREECHEST", KeyCode.P, "FREECHEST!"); 
         }
         #endregion
     }
