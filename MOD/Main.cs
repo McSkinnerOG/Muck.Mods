@@ -47,6 +47,7 @@ namespace MOD
         //All
         public static PlayerStatus[] All_Player_Status;
         public static OnlinePlayer[] Player_List;
+        public GameObject Hp;
 
         public void GetPlayerByID(int id)
         {
@@ -86,6 +87,7 @@ namespace MOD
             if (lp_pmanager == null) { lp_pmanager = lp_movement.gameObject.GetComponent<PlayerManager>(); }
         }
         public void FixedUpdate() { MODULES.ONE_HIT.FixedUpdate(); }
+
         public void Update()
         { 
             if (Input.GetKey(KeyCode_KillOthers.Value)) { ClientSend.PlayerHit((int)DAMAGE_VALUE.Value, GameManager.players[1].id, 9f, 0, base.transform.position); }
@@ -107,10 +109,15 @@ namespace MOD
                 lp_pstatus.maxHp = 999;
                 lp_pstatus.stamina = 99999;
                 lp_pstatus.maxStamina = 99999;
-                lp_pstatus.shield = 9999;
-                lp_pstatus.maxShield = 9999;
-                lp_pstatus.hunger = 9999;
+                lp_pstatus.shield = 1000;
+                lp_pstatus.maxShield = 1000;
+                lp_pstatus.hunger = 1000;
                 lp_pstatus.currentSpeedArmorMultiplier = RUN_SPEED.Value;
+                Hp = GameObject.Find("UI (1)/Gold/Day/otherHpUI/Players/PlayerStatus(Clone)/RawImage/Hp/ActualHp");
+                if (Hp.gameObject == true)
+                {
+                    Destroy(Hp);
+                }
             }
             if (Input.GetKeyDown(KeyCode_GRIEFER.Value))
             {
@@ -130,14 +137,14 @@ namespace MOD
         public static ConfigEntry<float> RUN_SPEED;
         public void InitConfig()
         { 
-            DAMAGE_VALUE = Config.Bind("Player", "DAMAGE", 999f, new ConfigDescription("Flight Speed", new AcceptableValueRange<float>(1f, 9999999f))); 
+            DAMAGE_VALUE = Config.Bind("Player", "Damage Value", 999f, new ConfigDescription("Amount of dmg you will deal to Player", new AcceptableValueRange<float>(1f, 9999999f))); 
             KeyCode_Cheats = Config.Bind("Cheats", "Infinite Hp, Shield, Stam, No Hunger", KeyCode.F1, "LMFAO!");
-            KeyCode_Cheats = Config.Bind("Cheats", "Sliding", KeyCode.C, "Sliding!");
+            KeyCode_Sliding = Config.Bind("Cheats", "Sliding", KeyCode.C, "Sliding!");
             KeyCode_KillOthers = Config.Bind("Cheats", "Get sauced", KeyCode.F2, "Kill player");
             KeyCode_KillMe = Config.Bind("Cheats", "KMS", KeyCode.F2, "Kill player");
             KeyCode_ReviveMe = Config.Bind("Cheatz", "ReviveMe", KeyCode.F3, "Insta res");
-            KeyCode_ReviveOthers = Config.Bind("Cheatz", "ReviveOthers", KeyCode.F3, "Insta res");
-            KeyCode_GRIEFER = Config.Bind("Cheats", "Hehe", KeyCode.F4, "Set Mobs hp to infinity");
+            KeyCode_ReviveOthers = Config.Bind("Cheatz", "ReviveOthers", KeyCode.F4, "Insta res");
+            KeyCode_GRIEFER = Config.Bind("Cheats", "Hehe", KeyCode.F5, "Set Mobs hp to infinity");
             RUN_SPEED = Config.Bind("Run speed", "Run Speed Slider", 1f, new ConfigDescription("Running Speed", new AcceptableValueRange<float>(0f, 1500f)));
         }
         #endregion
