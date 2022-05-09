@@ -322,6 +322,8 @@
     <Compile Include="Main.cs" />
     <Compile Include="MODULES\INTERACT.cs" />
     <Compile Include="MODULES\MOVEMENT\SLIDING.cs" />
+    <Compile Include="MODULES\STATS\HUNGER.cs" />
+    <Compile Include="MODULES\STATS\SHIELD.cs" />
     <Compile Include="MODULES\STATS\STAMINA.cs" />
     <Compile Include="MODULES\MOVEMENT\TELEPORT.cs" />
     <Compile Include="MODULES\STATS\GOD.cs" />

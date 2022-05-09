@@ -164,13 +164,18 @@ namespace MOD
             MODULES.STATS.STAMINA.StaminaMax = Config.Bind("Cheats", "Stamina Max", 999f, new ConfigDescription("Maximum Stamina Value", new AcceptableValueRange<float>(1f, 9999999f))); 
             MODULES.STATS.STAMINA.StaminaDrain = Config.Bind("Cheats", "Stamina Drain", 999f, new ConfigDescription("Stamina Drain Amount Over Time", new AcceptableValueRange<float>(0f, 1000)));
             MODULES.STATS.STAMINA.KeyCode_InfStamina = Config.Bind("Cheats", "Infinite Stamina", KeyCode.Backspace, "Infinite Stamina!");
-            MODULES.STATS.STAMINA.KeyCode_SetStamina = Config.Bind("Cheats", "Set Stamina", KeyCode.Backspace, "Set Stamina!"); 
+            MODULES.STATS.STAMINA.KeyCode_SetStamina = Config.Bind("Cheats", "Set Stamina", KeyCode.Backspace, "Set Stamina!");
             //HUNGER
             MODULES.STATS.HUNGER.Hunger = Config.Bind("Cheats", "Hunger", 999f, new ConfigDescription("Current/Active Hunger Value", new AcceptableValueRange<float>(1f, 9999999f)));
             MODULES.STATS.HUNGER.HungerMax = Config.Bind("Cheats", "Hunger Max", 999f, new ConfigDescription("Maximum Hunger Value", new AcceptableValueRange<float>(1f, 9999999f)));
             MODULES.STATS.HUNGER.HungerDrain = Config.Bind("Cheats", "Hunger Drain", 999f, new ConfigDescription("Hunger Drain Amount Over Time", new AcceptableValueRange<float>(0f, 1000)));
             MODULES.STATS.HUNGER.KeyCode_InfHunger = Config.Bind("Cheats", "Infinite Hunger", KeyCode.Backspace, "Infinite Hunger!");
-            MODULES.STATS.HUNGER.KeyCode_SetHunger = Config.Bind("Cheats", "Set Hunger", KeyCode.Backspace, "Set Hunger!"); 
+            MODULES.STATS.HUNGER.KeyCode_SetHunger = Config.Bind("Cheats", "Set Hunger", KeyCode.Backspace, "Set Hunger!");
+            //SHIELD 
+            MODULES.STATS.SHIELD.Shield = Config.Bind("Cheats", "Shield", 999f, new ConfigDescription("Current/Active Hunger Value", new AcceptableValueRange<float>(1f, 9999999f)));
+            MODULES.STATS.SHIELD.ShieldMax = Config.Bind("Cheats", "Shield Max", 999, new ConfigDescription("Maximum Hunger Value", new AcceptableValueRange<float>(1f, 9999999f))); 
+            MODULES.STATS.SHIELD.KeyCode_InfShield = Config.Bind("Cheats", "Infinite Shield", KeyCode.Backspace, "Infinite Shield!");
+            MODULES.STATS.SHIELD.KeyCode_SetShield = Config.Bind("Cheats", "Set Shield", KeyCode.Backspace, "Set Shield!");
             //GOD
             MODULES.STATS.GOD.HP = Config.Bind("Cheats", "HP", 100f, new ConfigDescription("Player HP", new AcceptableValueRange<float>(1f, 100000f)));
             MODULES.STATS.GOD.KeyCode_Godmode = Config.Bind("Cheats", "GODMODE", KeyCode.G, "GODMODE");
