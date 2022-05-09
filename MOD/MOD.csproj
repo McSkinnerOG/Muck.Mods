@@ -321,11 +321,13 @@
   <ItemGroup>
     <Compile Include="Main.cs" />
     <Compile Include="MODULES\INTERACT.cs" />
-    <Compile Include="MODULES\TELEPORT.cs" />
-    <Compile Include="MODULES\GOD.cs" />
-    <Compile Include="MODULES\SPEEDHACK.cs" />
-    <Compile Include="MODULES\FREE_CHEST.cs" />
-    <Compile Include="MODULES\ONE_HIT.cs" />
+    <Compile Include="MODULES\MOVEMENT\SLIDING.cs" />
+    <Compile Include="MODULES\STATS\STAMINA.cs" />
+    <Compile Include="MODULES\MOVEMENT\TELEPORT.cs" />
+    <Compile Include="MODULES\STATS\GOD.cs" />
+    <Compile Include="MODULES\MOVEMENT\SPEEDHACK.cs" />
+    <Compile Include="MODULES\WORLD\FREE_CHEST.cs" />
+    <Compile Include="MODULES\WORLD\ONE_HIT.cs" />
     <Compile Include="Patches\Patches.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Content Include="Package\icon.png" />

@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
  
-namespace MOD.MODULES
+namespace MOD.MODULES.WORLD
 {
     public class ONE_HIT : MonoBehaviour
     {
@@ -28,12 +28,14 @@ namespace MOD.MODULES
         } 
         public static void OneHit()
         { 
-            var t = FindObjectsOfType<HitableTree>();
-            var m = FindObjectsOfType<HitableMob>();
-            var r = FindObjectsOfType<HitableRock>(); 
-            foreach (HitableTree item in t) { item.hp = 1; item.minTier = 0; }
-            foreach (HitableMob item in m) { item.hp = 1; }
-            foreach (HitableRock item in r) { item.hp = 1; }
+            var trees = FindObjectsOfType<HitableTree>();
+            var mobs = FindObjectsOfType<HitableMob>();
+            var rocks = FindObjectsOfType<HitableRock>(); 
+            // Set the Tree/Rock/Mob to 1 health |
+            //for trees and rocks we also set the "compatibleItem" to a generic "Item" insted of "Pickaxe" or "Axe" etc
+            foreach (HitableTree tree in trees) { tree.hp = 1; tree.compatibleItem = InventoryItem.ItemType.Item; tree.minTier = 0; }
+            foreach (HitableMob mob in mobs) { mob.hp = 1; }
+            foreach (HitableRock rock in rocks) { rock.hp = 1; rock.compatibleItem = InventoryItem.ItemType.Item; rock.minTier = 0; }
             // TODO: FILTER FOR TRADERS
             //foreach (HitableActor item in a)
             //{

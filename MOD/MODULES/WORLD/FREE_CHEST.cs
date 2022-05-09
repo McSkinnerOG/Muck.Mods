@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using UnityEngine; 
-namespace MOD.MODULES
+namespace MOD.MODULES.WORLD
 {
     public class FREE_CHEST : MonoBehaviour
     {
