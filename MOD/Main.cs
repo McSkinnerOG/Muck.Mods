@@ -118,40 +118,32 @@ namespace MOD
                 MODULES.STATS.HUNGER.Update();
                 MODULES.STATS.SHIELD.Update();
                 MODULES.STATS.STAMINA.Update();
+                MODULES.WORLD.ONE_HIT.Update();
+                MODULES.WORLD.FREE_CHEST.Update();
                 MODULES.MOVEMENT.SLIDING.Update();
                 MODULES.MOVEMENT.SPEEDHACK.Update();
-                MODULES.MOVEMENT.TELEPORT.Update();
-                //if (Input.GetKey(KeyCode_KillOthers.Value)) { ClientSend.PlayerHit((int)DAMAGE_VALUE.Value, GameManager.players[1].id, (int)DAMAGE_VALUE.Value, 0, base.transform.position); }
-                //if (Input.GetKey(KeyCode_KillMe.Value)) { ClientSend.PlayerHit((int)DAMAGE_VALUE.Value, GameManager.players[LocalClient.instance.myId].id, (int)DAMAGE_VALUE.Value, 0, base.transform.position); }
-                //if (Input.GetKey(KeyCode_ReviveOthers.Value)) { ClientSend.RevivePlayer(GameManager.players[1].id); }
-                //if (Input.GetKey(KeyCode_ReviveMe.Value)) { ClientSend.RevivePlayer(GameManager.players[LocalClient.instance.myId].id); } 
-                if (Input.GetKeyDown(KeyCode_Cheats.Value))
-                {
-                    LocalPlayer_Search(); 
-                    lp_pstatus.shield = 9999;
-                    lp_pstatus.maxShield = 9999;
-                    lp_pstatus.hunger = 9999;
-                }
+                MODULES.MOVEMENT.TELEPORT.Update(); 
                 if (Input.GetKeyDown(KeyCode_GRIEFER.Value))
                 {
                     var m = FindObjectsOfType<HitableMob>(); 
                     foreach (HitableMob mob in m) { mob.hp = 0; }
                 }
-            } 
+                //if (Input.GetKey(KeyCode_KillOthers.Value)) { ClientSend.PlayerHit((int)DAMAGE_VALUE.Value, GameManager.players[1].id, (int)DAMAGE_VALUE.Value, 0, base.transform.position); }
+                //if (Input.GetKey(KeyCode_KillMe.Value)) { ClientSend.PlayerHit((int)DAMAGE_VALUE.Value, GameManager.players[LocalClient.instance.myId].id, (int)DAMAGE_VALUE.Value, 0, base.transform.position); }
+                //if (Input.GetKey(KeyCode_ReviveOthers.Value)) { ClientSend.RevivePlayer(GameManager.players[1].id); }
+                //if (Input.GetKey(KeyCode_ReviveMe.Value)) { ClientSend.RevivePlayer(GameManager.players[LocalClient.instance.myId].id); }  
+            }
         }
         #region[Bepinex Config Entries] 
-        public static ConfigEntry<float> DAMAGE_VALUE; 
-        public static ConfigEntry<KeyCode> KeyCode_Cheats; 
+        public static ConfigEntry<float> DAMAGE_VALUE;
+        public static ConfigEntry<KeyCode> KeyCode_GRIEFER; 
+        public static ConfigEntry<string> playername;
         //public static ConfigEntry<KeyCode> KeyCode_KillOthers;
         //public static ConfigEntry<KeyCode> KeyCode_KillMe;
         //public static ConfigEntry<KeyCode> KeyCode_ReviveOthers;
         //public static ConfigEntry<KeyCode> KeyCode_ReviveMe;
-        public static ConfigEntry<KeyCode> KeyCode_GRIEFER;
-        
-        public static ConfigEntry<string> playername;
         public void InitConfig()
-        {
-            KeyCode_Cheats = Config.Bind("Cheats", "Infinite Hp, Shield, Stam, No Hunger", KeyCode.F1, "LMFAO!");
+        { 
             KeyCode_GRIEFER = Config.Bind("Cheats", "Hehe", KeyCode.F6, "Set Mobs hp to infinity");
             DAMAGE_VALUE = Config.Bind("Cheats", "DAMAGE", 999f, new ConfigDescription("Flight Speed", new AcceptableValueRange<float>(1f, 9999999f)));
             //KeyCode_KillOthers = Config.Bind("Cheats", "KillOthers", KeyCode.F2, "Kill OnlinePlayer");
@@ -182,6 +174,7 @@ namespace MOD
             //MOVEMENT
             MODULES.MOVEMENT.SLIDING.KeyCode_Sliding = Config.Bind("Cheats", "Sliding", KeyCode.C, "Sliding!");
             MODULES.MOVEMENT.SPEEDHACK.RUN_SPEED = Config.Bind("Cheats", "Run Speed Slider", 1f, new ConfigDescription("Running Speed", new AcceptableValueRange<float>(0f, 1500f)));  
+            //WORLD
             MODULES.WORLD.ONE_HIT.KeyCode_ONE_HIT = Config.Bind("Cheats", "ONEHIT", KeyCode.O, "ONEHIT!");
             MODULES.WORLD.FREE_CHEST.KeyCode_FREE_CHEST = Config.Bind("Cheats", "FREECHEST", KeyCode.P, "FREECHEST!"); 
         }

@@ -13,14 +13,14 @@ namespace MOD.MODULES.WORLD
         public static bool Auto = false;
         public static ConfigEntry<KeyCode> KeyCode_FREE_CHEST;
         public static void FixedUpdate()
-        {
-            if (Input.GetKeyDown(KeyCode_FREE_CHEST.Value)) { Auto = !Auto; }
+        { 
             if (Auto == true)
             {
                 time++; Debug.Log(time);
                 if (time >= 145) { Unlock(); time = 0; return; }
             } 
         }
+        public static void Update() { if (Input.GetKeyDown(KeyCode_FREE_CHEST.Value)) { Auto = !Auto; } }
         public static void Unlock()
         {
             var x = FindObjectsOfType<LootContainerInteract>(); 

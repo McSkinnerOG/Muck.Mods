@@ -15,8 +15,7 @@ namespace MOD.MODULES.WORLD
         public static bool Auto = false;
         public static ConfigEntry<KeyCode> KeyCode_ONE_HIT;
         public static void FixedUpdate()
-        {
-            if (Input.GetKeyDown(KeyCode_ONE_HIT.Value)) { Auto = !Auto; }
+        { 
             if (Auto == true)
             {
                 //Each frame +1 to the 'time' var
@@ -26,7 +25,7 @@ namespace MOD.MODULES.WORLD
                 if (time >= 145) { OneHit(); time = 0; return; }
             }
         }
-
+        public static void Update() { if (Input.GetKeyDown(KeyCode_ONE_HIT.Value)) { Auto = !Auto; } }
         public static void OneHit()
         { 
             var trees = FindObjectsOfType<HitableTree>();
