@@ -18,13 +18,9 @@ namespace MOD.MODULES
                 // if our "lp_pstatus" reference can find required component 
                 // we set our "maxHp" equal to the sum of "hp + maxShield"
                 if (Main.lp_pstatus != null) 
-                { 
-                    // HP (Current Health) = (Max HP - Max Shield);
-                    Main.lp_pstatus.hp = (int)HP.Value; 
-                    // Set 'HP' and 'Shield' to their individual maximums
-                    Main.lp_pstatus.shield = Main.lp_pstatus.maxShield;
-                    // Maximum Health = (HP + Maximum Shield)
-                    // NB: Max Shield is same as Shield
+                {  
+                    Main.lp_pstatus.hp = (int)HP.Value;  
+                    Main.lp_pstatus.shield = Main.lp_pstatus.maxShield; 
                     Main.lp_pstatus.maxHp = (int)HP.Value + Main.lp_pstatus.maxShield;
                 }
                 // if our "lp_pstatus" reference can NOT find required component we do a search for it so next cycle the code runs correctly.
