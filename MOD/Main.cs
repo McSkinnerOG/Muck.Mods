@@ -5,6 +5,7 @@ using HarmonyLib;
 using System.IO;
 using System.Reflection;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace MOD
 {
@@ -47,7 +48,7 @@ namespace MOD
         //All
         public static PlayerStatus[] All_Player_Status;
         public static OnlinePlayer[] Player_List;
-        public GameObject Hp;
+        public static bool god = false;
 
         public void GetPlayerByID(int id)
         {
@@ -102,10 +103,17 @@ namespace MOD
             {
                 if (lp_movement == null) { LocalPlayer_Search(); } lp_input.crouching = false; 
             }
+            if (god)
+            {
+                lp_pstatus.hp = lp_pstatus.maxHp;
+                Debug.Log(lp_pstatus.maxHp);
+            }
+            
             if (Input.GetKeyDown(KeyCode_Cheats.Value))
             {
                 LocalPlayer_Search();
-                lp_pstatus.hp = 999;
+                god = !god;
+                lp_pstatus.hp = lp_pstatus.maxHp;
                 lp_pstatus.maxHp = 999;
                 lp_pstatus.stamina = 99999;
                 lp_pstatus.maxStamina = 99999;
@@ -113,12 +121,9 @@ namespace MOD
                 lp_pstatus.maxShield = 1000;
                 lp_pstatus.hunger = 1000;
                 lp_pstatus.currentSpeedArmorMultiplier = RUN_SPEED.Value;
-                Hp = GameObject.Find("UI (1)/Gold/Day/otherHpUI/Players/PlayerStatus(Clone)/RawImage/Hp/ActualHp");
-                if (Hp.gameObject == true)
-                {
-                    Destroy(Hp);
-                }
+                
             }
+            Debug.Log(lp_pstatus.maxHp);
             if (Input.GetKeyDown(KeyCode_GRIEFER.Value))
             {
                 var m = FindObjectsOfType<HitableMob>();
