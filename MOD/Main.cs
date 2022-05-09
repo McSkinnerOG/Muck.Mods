@@ -1,18 +1,19 @@
-﻿//We dont use our region import trick here as it causes errors.
-using BepInEx;
+﻿using BepInEx;
 using BepInEx.Configuration;
 using BepInEx.Logging;
-using HarmonyLib;
+using HarmonyLib; 
 using System.IO;
 using System.Reflection;
 using UnityEngine;
+using UnityEngine.SceneManagement;
+
 namespace MOD
 {
     [BepInPlugin(GUID, MODNAME, VERSION)]
     public class Main : BaseUnityPlugin
     {
         #region[Declarations] 
-        public const string MODNAME = "MOD", AUTHOR = "", GUID = AUTHOR + "_" + MODNAME, VERSION = "1.0.0.0"; 
+        public const string MODNAME = "MOD", AUTHOR = "", GUID = AUTHOR + "_" + MODNAME, VERSION = "1.0.0.1"; 
         internal readonly ManualLogSource log;
         internal readonly Harmony harmony;
         internal readonly Assembly assembly;
@@ -68,7 +69,7 @@ namespace MOD
             foreach (OnlinePlayer op in Player_List)
             {
                 op_pmanager = op.GetComponent<PlayerManager>();
-                if (op_pmanager.username == Main.op_name)
+                if (op_pmanager.username == username)
                 {
                     op_hittable = op.GetComponent<HitableActor>();
                     op_pmanager = op.GetComponent<PlayerManager>();
@@ -86,7 +87,7 @@ namespace MOD
                 op_pmanager = op.GetComponent<PlayerManager>();
             }
         }
-        public void LocalPlayer_Search()
+        public static void LocalPlayer_Search()
         {
             if (lp_movement == null)
             {
@@ -101,33 +102,38 @@ namespace MOD
         }
         public void FixedUpdate() { MODULES.ONE_HIT.FixedUpdate(); MODULES.FREE_CHEST.FixedUpdate(); }
         public void Update()
-        { 
-            if (Input.GetKey(KeyCode_KillOthers.Value)) { ClientSend.PlayerHit((int)DAMAGE_VALUE.Value, GameManager.players[1].id, 9f, 0, base.transform.position); }
-            if (Input.GetKey(KeyCode_KillMe.Value)) { ClientSend.PlayerHit(99, GameManager.players[LocalClient.instance.myId].id, 9f, 0, base.transform.position); }
-            if (Input.GetKey(KeyCode_ReviveOthers.Value)) { ClientSend.RevivePlayer(GameManager.players[1].id); } 
-            if (Input.GetKey(KeyCode_ReviveMe.Value)) { ClientSend.RevivePlayer(GameManager.players[LocalClient.instance.myId].id); }
-            if (Input.GetKey(KeyCode_Sliding.Value))
+        {
+            // Only run our stuff while INGAME
+            if (SceneManager.GetActiveScene().name == "GameAfterLobby")
             {
-                if (lp_movement == null) { LocalPlayer_Search(); } lp_input.crouching = true;
-            }
-            if (Input.GetKeyUp(KeyCode_Sliding.Value)) { if (lp_movement == null) { LocalPlayer_Search(); } lp_input.crouching = false; }
-            if (Input.GetKeyDown(KeyCode_Cheats.Value))
-            {
-                LocalPlayer_Search();
-                lp_pstatus.hp = 999;
-                lp_pstatus.maxHp = 999;
-                lp_pstatus.stamina = 99999;
-                lp_pstatus.maxStamina = 99999;
-                lp_pstatus.shield = 9999;
-                lp_pstatus.maxShield = 9999;
-                lp_pstatus.hunger = 9999;
-                lp_pstatus.currentSpeedArmorMultiplier = RUN_SPEED.Value;
-            }
-            if (Input.GetKeyDown(KeyCode_GRIEFER.Value))
-            {
-                var m = FindObjectsOfType<HitableMob>();
-                foreach (HitableMob mob in m) { mob.hp = 0; }
-            }
+                // Call other classes Updates
+                MODULES.GOD.Update();
+                if (Input.GetKey(KeyCode_KillOthers.Value)) { ClientSend.PlayerHit((int)DAMAGE_VALUE.Value, GameManager.players[1].id, (int)DAMAGE_VALUE.Value, 0, base.transform.position); }
+                if (Input.GetKey(KeyCode_KillMe.Value)) { ClientSend.PlayerHit((int)DAMAGE_VALUE.Value, GameManager.players[LocalClient.instance.myId].id, (int)DAMAGE_VALUE.Value, 0, base.transform.position); }
+                if (Input.GetKey(KeyCode_ReviveOthers.Value)) { ClientSend.RevivePlayer(GameManager.players[1].id); }
+                if (Input.GetKey(KeyCode_ReviveMe.Value)) { ClientSend.RevivePlayer(GameManager.players[LocalClient.instance.myId].id); }
+                if (Input.GetKey(KeyCode_Sliding.Value))
+                {
+                    if (lp_movement == null) { LocalPlayer_Search(); }
+                    lp_input.crouching = true;
+                }
+                if (Input.GetKeyUp(KeyCode_Sliding.Value)) { if (lp_movement == null) { LocalPlayer_Search(); } lp_input.crouching = false; }
+                if (Input.GetKeyDown(KeyCode_Cheats.Value))
+                {
+                    LocalPlayer_Search();
+                    MODULES.GOD.god = !MODULES.GOD.god;
+                    lp_pstatus.stamina = 99999;
+                    lp_pstatus.maxStamina = 99999;
+                    lp_pstatus.shield = 9999;
+                    lp_pstatus.maxShield = 9999;
+                    lp_pstatus.hunger = 9999;
+                }
+                if (Input.GetKeyDown(KeyCode_GRIEFER.Value))
+                {
+                    var m = FindObjectsOfType<HitableMob>();
+                    foreach (HitableMob mob in m) { mob.hp = 0; }
+                }
+            } 
         }
         #region[Bepinex Config Entries] 
         public static ConfigEntry<float> DAMAGE_VALUE; 
@@ -138,7 +144,7 @@ namespace MOD
         public static ConfigEntry<KeyCode> KeyCode_ReviveOthers;
         public static ConfigEntry<KeyCode> KeyCode_ReviveMe;
         public static ConfigEntry<KeyCode> KeyCode_GRIEFER;
-        public static ConfigEntry<float> RUN_SPEED;
+        
         public static ConfigEntry<string> playername;
         public void InitConfig()
         { 
@@ -149,8 +155,9 @@ namespace MOD
             KeyCode_ReviveMe = Config.Bind("Cheats", "ReviveMe", KeyCode.F4, "Insta res");
             KeyCode_ReviveOthers = Config.Bind("Cheats", "ReviveOthers", KeyCode.F5, "Insta res");
             KeyCode_GRIEFER = Config.Bind("Cheats", "Hehe", KeyCode.F6, "Set Mobs hp to infinity");
-            RUN_SPEED = Config.Bind("Cheats", "Run Speed Slider", 1f, new ConfigDescription("Running Speed", new AcceptableValueRange<float>(0f, 1500f))); 
-            KeyCode_Sliding = Config.Bind("Cheats", "Sliding", KeyCode.C, "Sliding!");
+            KeyCode_Sliding = Config.Bind("Cheats", "Sliding", KeyCode.C, "Sliding!"); 
+            MODULES.GOD.HP = Config.Bind("Cheats", "HP", 100f, new ConfigDescription("Player HP", new AcceptableValueRange<float>(1f, 100000f)));
+            MODULES.SPEEDHACK.RUN_SPEED = Config.Bind("Cheats", "Run Speed Slider", 1f, new ConfigDescription("Running Speed", new AcceptableValueRange<float>(0f, 1500f)));  
             MODULES.ONE_HIT.KeyCode_ONE_HIT = Config.Bind("Cheats", "ONEHIT", KeyCode.O, "ONEHIT!");
             MODULES.FREE_CHEST.KeyCode_FREE_CHEST = Config.Bind("Cheats", "FREECHEST", KeyCode.P, "FREECHEST!"); 
         }
