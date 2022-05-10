@@ -28,6 +28,7 @@ namespace MOD
         }
 
         #region[LOCALPLAYER]
+        public static Rigidbody lp_rigidbody;
         public static PlayerMovement lp_movement;
         public static PlayerInput lp_input;
         public static PlayerManager lp_pmanager;
@@ -96,6 +97,7 @@ namespace MOD
                 lp_hittable = FindObjectOfType<HitableActor>();
                 lp_interact = FindObjectOfType<DetectInteractables>();
                 lp_pingController = FindObjectOfType<PingController>();
+                lp_rigidbody = FindObjectOfType<Rigidbody>();
             }
             if (lp_pmanager == null) { lp_pmanager = lp_movement.gameObject.GetComponent<PlayerManager>(); }
         }
@@ -122,34 +124,35 @@ namespace MOD
                 MODULES.WORLD.FREE_CHEST.Update();
                 MODULES.MOVEMENT.SLIDING.Update();
                 MODULES.MOVEMENT.SPEEDHACK.Update();
-                MODULES.MOVEMENT.TELEPORT.Update(); 
+                MODULES.MOVEMENT.TELEPORT.Update();
+                MODULES.MOVEMENT.FLIGHT.Update();
                 if (Input.GetKeyDown(KeyCode_GRIEFER.Value))
                 {
                     var m = FindObjectsOfType<HitableMob>(); 
                     foreach (HitableMob mob in m) { mob.hp = 0; }
                 }
-                //if (Input.GetKey(KeyCode_KillOthers.Value)) { ClientSend.PlayerHit((int)DAMAGE_VALUE.Value, GameManager.players[1].id, (int)DAMAGE_VALUE.Value, 0, base.transform.position); }
-                //if (Input.GetKey(KeyCode_KillMe.Value)) { ClientSend.PlayerHit((int)DAMAGE_VALUE.Value, GameManager.players[LocalClient.instance.myId].id, (int)DAMAGE_VALUE.Value, 0, base.transform.position); }
-                //if (Input.GetKey(KeyCode_ReviveOthers.Value)) { ClientSend.RevivePlayer(GameManager.players[1].id); }
-                //if (Input.GetKey(KeyCode_ReviveMe.Value)) { ClientSend.RevivePlayer(GameManager.players[LocalClient.instance.myId].id); }  
+                if (Input.GetKey(KeyCode_KillOthers.Value)) { ClientSend.PlayerHit((int)DAMAGE_VALUE.Value, GameManager.players[1].id, (int)DAMAGE_VALUE.Value, 0, base.transform.position); }
+                if (Input.GetKey(KeyCode_KillMe.Value)) { ClientSend.PlayerHit((int)DAMAGE_VALUE.Value, GameManager.players[LocalClient.instance.myId].id, (int)DAMAGE_VALUE.Value, 0, base.transform.position); }
+                if (Input.GetKey(KeyCode_ReviveOthers.Value)) { ClientSend.RevivePlayer(GameManager.players[1].id); }
+                if (Input.GetKey(KeyCode_ReviveMe.Value)) { ClientSend.RevivePlayer(GameManager.players[LocalClient.instance.myId].id); }  
             }
         }
         #region[Bepinex Config Entries] 
         public static ConfigEntry<float> DAMAGE_VALUE;
         public static ConfigEntry<KeyCode> KeyCode_GRIEFER; 
         public static ConfigEntry<string> playername;
-        //public static ConfigEntry<KeyCode> KeyCode_KillOthers;
-        //public static ConfigEntry<KeyCode> KeyCode_KillMe;
-        //public static ConfigEntry<KeyCode> KeyCode_ReviveOthers;
-        //public static ConfigEntry<KeyCode> KeyCode_ReviveMe;
+        public static ConfigEntry<KeyCode> KeyCode_KillOthers;
+        public static ConfigEntry<KeyCode> KeyCode_KillMe;
+        public static ConfigEntry<KeyCode> KeyCode_ReviveOthers;
+        public static ConfigEntry<KeyCode> KeyCode_ReviveMe;
         public void InitConfig()
         { 
             KeyCode_GRIEFER = Config.Bind("Cheats", "Hehe", KeyCode.F6, "Set Mobs hp to infinity");
             DAMAGE_VALUE = Config.Bind("Cheats", "DAMAGE", 999f, new ConfigDescription("Flight Speed", new AcceptableValueRange<float>(1f, 9999999f)));
-            //KeyCode_KillOthers = Config.Bind("Cheats", "KillOthers", KeyCode.F2, "Kill OnlinePlayer");
-            //KeyCode_KillMe = Config.Bind("Cheats", "KillMe", KeyCode.F3, "Kill LocalPlayer");
-            //KeyCode_ReviveMe = Config.Bind("Cheats", "ReviveMe", KeyCode.F4, "Insta res");
-            //KeyCode_ReviveOthers = Config.Bind("Cheats", "ReviveOthers", KeyCode.F5, "Insta res");
+            KeyCode_KillOthers = Config.Bind("Cheats", "KillOthers", KeyCode.F2, "Kill OnlinePlayer");
+            KeyCode_KillMe = Config.Bind("Cheats", "KillMe", KeyCode.F3, "Kill LocalPlayer");
+            KeyCode_ReviveMe = Config.Bind("Cheats", "ReviveMe", KeyCode.F4, "Insta res");
+            KeyCode_ReviveOthers = Config.Bind("Cheats", "ReviveOthers", KeyCode.F5, "Insta res");
 
             //STAMINA
             MODULES.STATS.STAMINA.Stamina = Config.Bind("Cheats", "Stamina", 999f, new ConfigDescription("Current/Active Stamina Value", new AcceptableValueRange<float>(1f, 9999999f))); 

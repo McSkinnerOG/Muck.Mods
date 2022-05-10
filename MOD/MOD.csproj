@@ -321,6 +321,7 @@
   <ItemGroup>
     <Compile Include="Main.cs" />
     <Compile Include="MODULES\INTERACT.cs" />
+    <Compile Include="MODULES\MOVEMENT\FLIGHT.cs" />
     <Compile Include="MODULES\MOVEMENT\SLIDING.cs" />
     <Compile Include="MODULES\STATS\HUNGER.cs" />
     <Compile Include="MODULES\STATS\SHIELD.cs" />
